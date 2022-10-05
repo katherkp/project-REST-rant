@@ -7,7 +7,22 @@ router.get('/', (req, res) => {
 })
 
 router.post('/', (req, res) => {
-  res.send('POST /places stub')
+  db.Place.create(req.body)
+  .then(() => {
+      res.redirect('/places')
+  })
+  .catch(err => {
+    if (err && err.name == 'ValidationError') {
+      let message = 'Validation Error: '
+
+      // Todo: Find all validation errors
+
+      res.render('places/new', { message })
+    }
+    else {
+      res.render('error404')
+    }
+  })
 })
 
 router.get('/new', (req, res) => {
@@ -19,7 +34,10 @@ router.get('/:id', (req, res) => {
   .then(place => {
     res.render('places/show', { place })
   })
-  .catch()
+  .catch(err => {
+    console.log('err', err)
+    res.render('error404')
+  })
 })
 
 router.put('/:id', (req, res) => {

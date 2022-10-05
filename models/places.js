@@ -1,39 +1,18 @@
 const mongoose = require('mongoose')
-const router = require('express').Router()
-const db = require('../models')
 
 const placeSchema = new mongoose.Schema({
-  name: { type:String, required: true },
-  pic: String,
-  cuisines: { type:String, required: true },
-  city: { type:String, default: 'Anytown' },
-  state: { type:String, default: 'USA' },
-  founded: Number
+  name: { type: String, required: true },
+  pic: { type: String, default: 'http://placekitten.com/350/350' },
+  cuisines: { type: String, required: true },
+  city: { type: String, default: 'Anytown' },
+  state: { type: String, default: 'USA' },
+  founded: Number,
+  min: [1673, 'Surely not that old?!'],
+  max: [new Date().getUTCFullYear(), 'Hey, this year is in the future!']
 })
 
-const router = require('express').Router()
-const db = require('../models')
-
-router.get('/', (req, res) => {
-    db.Place.find()
-    .then((places) => {
-      res.render('places/index', { places })
-    })
-    .catch(err => {
-      console.log(err) 
-      res.render('error404')
-    })
-})
-
-router.post('/', (req, res) => {
-  db.Place.create(req.body)
-  .then(() => {
-      res.redirect('/places')
-  })
-  .catch(err => {
-      console.log('err', err)
-      res.render('error404')
-  })
-})
+placeSchema.methods.showEstablished = function() {
+  return `${this.name} has been serving ${this.city}, ${this.state} since ${this.founded}.`
+}
 
 module.exports = mongoose.model('Place', placeSchema)
